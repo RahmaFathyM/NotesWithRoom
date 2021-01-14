@@ -24,37 +24,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-initView();
-        RecyclerView main_recycler= findViewById(R.id.main_recycler);
-
-         list =NoteDataBase.getInstance(MainActivity.this).noteDao().getAllNotes();
-        RecyclerView. LayoutManager layoutManager= new GridLayoutManager(MainActivity.this,2);
-        main_recycler.setLayoutManager(layoutManager);
-        main_recycler.setHasFixedSize(true);
-
-          adapter =new Recycler_Adapter(list, new Recycler_onClickListener() {
-            @Override
-            public void recyclerOnClick(int position) {
-Note_Entity note =list.get(position);
-Intent intent=new Intent (MainActivity.this,AddActivity.class);
-intent.putExtra("note_title",note.getNote());
-intent.putExtra("note_describtion",note.getDescription());
-intent.putExtra("button","update");
-                intent.putExtra("id",note.getId());
-startActivity(intent);
-            }
-
-            @Override
-            public void imageOnClick(int position) {
-                NoteDataBase.getInstance(MainActivity.this).noteDao().deleteNoteById(list.get(position).getId());
-                list.remove(list.get(position));
-                adapter.notifyItemRemoved(position);
-                adapter.notifyDataSetChanged();
-            }
-
-        });
-        main_recycler.setAdapter(adapter);
-
+        initView();
+        putRecycler();
     }
 
 
@@ -88,4 +59,38 @@ startActivity(intent);
                 }
         );
     }
-   }
+
+    public void putRecycler(){
+        RecyclerView main_recycler= findViewById(R.id.main_recycler);
+
+        list =NoteDataBase.getInstance(MainActivity.this).noteDao().getAllNotes();
+        RecyclerView. LayoutManager layoutManager= new GridLayoutManager(MainActivity.this,2);
+        main_recycler.setLayoutManager(layoutManager);
+        main_recycler.setHasFixedSize(true);
+
+        adapter =new Recycler_Adapter(list, new Recycler_onClickListener() {
+            @Override
+            public void recyclerOnClick(int position) {
+                Note_Entity note =list.get(position);
+                Intent intent=new Intent (MainActivity.this,AddActivity.class);
+                intent.putExtra("note_title",note.getNote());
+                intent.putExtra("note_describtion",note.getDescription());
+                intent.putExtra("button","update");
+                intent.putExtra("id",note.getId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void imageOnClick(int position) {
+                NoteDataBase.getInstance(MainActivity.this).noteDao().deleteNoteById(list.get(position).getId());
+                list.remove(list.get(position));
+                adapter.notifyItemRemoved(position);
+                adapter.notifyDataSetChanged();
+            }
+
+        });
+        main_recycler.setAdapter(adapter);
+
+    }
+    }
+
