@@ -1,5 +1,6 @@
 package com.example.postswithroom;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -29,8 +30,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        putRecycler();
-
 
     }
 
@@ -48,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("note_describtion", "");
                 intent.putExtra("button", "save");
                 intent.putExtra("id", "");
-                startActivity(intent);
+            startActivityForResult(intent,1);
+
 
             }
 
@@ -67,30 +67,34 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    public void putRecycler() {
-        final RecyclerView main_recycler = findViewById(R.id.main_recycler);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1){
+            if(resultCode==RESULT_OK){
+                final RecyclerView main_recycler = findViewById(R.id.main_recycler);
 
-        list = NoteDataBase.getInstance(MainActivity.this).noteDao().getAllNotes();
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
-        main_recycler.setLayoutManager(layoutManager);
-        main_recycler.setHasFixedSize(true);
+                list = NoteDataBase.getInstance(MainActivity.this).noteDao().getAllNotes();
+                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
+                main_recycler.setLayoutManager(layoutManager);
+                main_recycler.setHasFixedSize(true);
 
-        adapter = new Recycler_Adapter(list, new Recycler_onClickListener() {
-            @Override
-            public void recyclerOnClick(int position) {
-                Note_Entity note = list.get(position);
-                Intent intent = new Intent(MainActivity.this, AddAndUpdateActivity.class);
-                intent.putExtra("note_title", note.getNote());
-                intent.putExtra("note_describtion", note.getDescription());
-                intent.putExtra("button", "update");
-                intent.putExtra("id", note.getId());
-                startActivity(intent);
-            }
+                adapter = new Recycler_Adapter(list, new Recycler_onClickListener() {
+                    @Override
+                    public void recyclerOnClick(int position) {
+                        Note_Entity note = list.get(position);
+                        Intent intent = new Intent(MainActivity.this, AddAndUpdateActivity.class);
+                        intent.putExtra("note_title", note.getNote());
+                        intent.putExtra("note_describtion", note.getDescription());
+                        intent.putExtra("button", "update");
+                        intent.putExtra("id", note.getId());
+                        startActivity(intent);
+                    }
 
-            @Override
-            public void imageOnClick(final int position) {
+                    @Override
+                    public void imageOnClick(final int position) {
 
-                final int itemid=list.get(position).getId();
+                        final int itemid=list.get(position).getId();
 //                note_entity=new Note_Entity(NoteDataBase.getInstance(MainActivity.this).noteDao().getTitleById(itemid),
 //                        NoteDataBase.getInstance(MainActivity.this).noteDao().getDescriptionById(itemid),
 //                        NoteDataBase.getInstance(MainActivity.this).noteDao().getDateById(itemid));
@@ -123,41 +127,44 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 
 
-                //undelete by AlertDialog (ok)
-                // to make sure the user want delete note or not
-                final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("Delete")
-                        .setMessage("Are you sure to delete this note?")
-                        //default colorAccent
-                        .setPositiveButton("Yes", null)
-                        .setNegativeButton("No", null)
-                        .show();
-                Button positive_btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                positive_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        NoteDataBase.getInstance(MainActivity.this).noteDao().deleteNoteById(list.get(position).getId());
-                        list.remove(list.get(position));
-                        adapter.notifyItemRemoved(position);
-                        adapter.notifyDataSetChanged();
-                        dialog.dismiss();
-                    }
-                });
+                        //undelete by AlertDialog (ok)
+                        // to make sure the user want delete note or not
+                        final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("Delete")
+                                .setMessage("Are you sure to delete this note?")
+                                //default colorAccent
+                                .setPositiveButton("Yes", null)
+                                .setNegativeButton("No", null)
+                                .show();
+                        Button positive_btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                        positive_btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                NoteDataBase.getInstance(MainActivity.this).noteDao().deleteNoteById(list.get(position).getId());
+                                list.remove(list.get(position));
+                                adapter.notifyItemRemoved(position);
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        });
 
-                Button negative_btn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                negative_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // to exit alertDialog
-                        dialog.dismiss();
-                    }
-                });
+                        Button negative_btn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                        negative_btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // to exit alertDialog
+                                dialog.dismiss();
+                            }
+                        });
 //
 //            }
-            }
-        });
-        main_recycler.setAdapter(adapter);
+                    }
+                });
+                main_recycler.setAdapter(adapter);
 
+
+            }
+        }
     }
 }
 

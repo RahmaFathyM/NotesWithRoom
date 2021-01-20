@@ -21,14 +21,16 @@ import Data_Base.Note_Entity;
 public class AddAndUpdateActivity extends AppCompatActivity {
     EditText add_title;
     EditText add_description;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-initView();
+        initView();
 
     }
+
     public void initView() {
         add_title = findViewById(R.id.add_title);
         add_description = findViewById(R.id.add_description);
@@ -57,18 +59,23 @@ initView();
                     String title = add_title.getText().toString();
                     String description = add_description.getText().toString();
                     //validation to make sure the note is not null
-if(description.isEmpty()) {
-   // Toast.makeText(AddAndUpdateActivity.this,"Please Enter your note",Toast.LENGTH_SHORT).show();
-    StyleableToast.makeText(AddAndUpdateActivity.this,"Make sure you enter your note" ,Toast.LENGTH_LONG,R.style.mytoast).show();
-}
-          else{
-    Note_Entity note = new Note_Entity(title, description, date);
-    NoteDataBase.getInstance(AddAndUpdateActivity.this).noteDao().addPost(note);
-    startActivity(new Intent(AddAndUpdateActivity.this, MainActivity.class));
-}
+                    if (description.isEmpty()) {
+                        // Toast.makeText(AddAndUpdateActivity.this,"Please Enter your note",Toast.LENGTH_SHORT).show();
+                        StyleableToast.makeText(AddAndUpdateActivity.this, "Make sure you enter your note", Toast.LENGTH_LONG, R.style.mytoast).show();
+                        add_description.requestFocus();
+                        add_description.setError("Enter your note");
+                    } else {
+                        Intent intent=new Intent();
+                        Note_Entity note = new Note_Entity(title, description, date);
+                        NoteDataBase.getInstance(AddAndUpdateActivity.this).noteDao().addPost(note);
+                   // startActivity(new Intent(AddAndUpdateActivity.this, MainActivity.class));
+
+                       setResult(RESULT_OK,new Intent());
+                       finish();
+                    }
                 }
             });
-        } else  {
+        } else {
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -80,15 +87,14 @@ if(description.isEmpty()) {
                     String title = add_title.getText().toString();
                     String description = add_description.getText().toString();
                     //validation
-                    if(description.isEmpty())
-
-                    { StyleableToast.makeText(AddAndUpdateActivity.this,"Make sure you enter your note after edit it" ,Toast.LENGTH_LONG,R.style.mytoast).show();
-                      //  Toast.makeText(AddAndUpdateActivity.this,"Please Enter your note after your Edit",Toast.LENGTH_SHORT).show();
-                        }
-                    else{
-                    NoteDataBase.getInstance(AddAndUpdateActivity.this).noteDao().updatePost(id, title, description, date);
-                    startActivity(new Intent(AddAndUpdateActivity.this, MainActivity.class));
-                }}
+                    if (description.isEmpty()) {
+                        StyleableToast.makeText(AddAndUpdateActivity.this, "Make sure you enter your note after edit it", Toast.LENGTH_LONG, R.style.mytoast).show();
+                        //  Toast.makeText(AddAndUpdateActivity.this,"Please Enter your note after your Edit",Toast.LENGTH_SHORT).show();
+                    } else {
+                        NoteDataBase.getInstance(AddAndUpdateActivity.this).noteDao().updatePost(id, title, description, date);
+                        //startActivity(new Intent(AddAndUpdateActivity.this, MainActivity.class));
+                    }
+                }
             });
 
 
