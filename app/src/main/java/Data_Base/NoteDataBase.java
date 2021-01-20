@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Note_Entity.class},version= 6)
+@Database(entities = {Note_Entity.class},version= 9)
 public abstract class NoteDataBase extends RoomDatabase {
     public static  final String DB_NAME = "Note_database" ;
 

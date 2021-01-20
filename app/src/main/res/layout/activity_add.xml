@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddActivity"
-    android:background="@color/colorAccent">
+    tools:context=".AddAndUpdateActivity"
+    android:background="@color/whitecolor">
     <EditText
         android:id="@+id/add_title"
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/whitecolor"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/add_description"

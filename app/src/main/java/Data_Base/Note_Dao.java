@@ -14,6 +14,12 @@ public interface Note_Dao {
     public  void addPost(Note_Entity note);
     @Query("Select * From Notes_table")
     public List<Note_Entity> getAllNotes();
+    @Query("Select note From Notes_table where id =:id")
+    public String getTitleById(int id);
+    @Query("Select description From Notes_table where id =:id")
+    public String getDescriptionById(int id);
+    @Query("Select date From Notes_table where id =:id")
+    public String getDateById(int id);
     @Query("DELETE FROM Notes_table where id =:id")
     public void deleteNoteById(int id);
     @Query("UPDATE Notes_table SET note=:note , description=:dec , date=:date wHERE id=:id")
