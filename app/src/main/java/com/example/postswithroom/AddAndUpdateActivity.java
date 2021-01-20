@@ -70,7 +70,7 @@ public class AddAndUpdateActivity extends AppCompatActivity {
                         NoteDataBase.getInstance(AddAndUpdateActivity.this).noteDao().addPost(note);
                    // startActivity(new Intent(AddAndUpdateActivity.this, MainActivity.class));
 
-                       setResult(RESULT_OK,new Intent());
+                       setResult(RESULT_OK,intent);
                        finish();
                     }
                 }
@@ -88,11 +88,16 @@ public class AddAndUpdateActivity extends AppCompatActivity {
                     String description = add_description.getText().toString();
                     //validation
                     if (description.isEmpty()) {
+                        add_description.setError("Enter your new note");
+                        add_description.requestFocus();
                         StyleableToast.makeText(AddAndUpdateActivity.this, "Make sure you enter your note after edit it", Toast.LENGTH_LONG, R.style.mytoast).show();
                         //  Toast.makeText(AddAndUpdateActivity.this,"Please Enter your note after your Edit",Toast.LENGTH_SHORT).show();
                     } else {
+Intent intent=new Intent();
                         NoteDataBase.getInstance(AddAndUpdateActivity.this).noteDao().updatePost(id, title, description, date);
                         //startActivity(new Intent(AddAndUpdateActivity.this, MainActivity.class));
+                        setResult(RESULT_OK,intent);
+                        finish();
                     }
                 }
             });

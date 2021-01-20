@@ -23,6 +23,7 @@ import Data_Base.Note_Entity;
 public class MainActivity extends AppCompatActivity {
     List<Note_Entity> list;
     Recycler_Adapter adapter;
+    RecyclerView main_recycler;
     Note_Entity note_entity;
 
     @Override
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-
+putRecycle();
     }
 
 
@@ -66,14 +67,70 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
     }
+    public void putRecycle(){
+         main_recycler = findViewById(R.id.main_recycler);
+        list = NoteDataBase.getInstance(MainActivity.this).noteDao().getAllNotes();
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
+        main_recycler.setLayoutManager(layoutManager);
+        main_recycler.setHasFixedSize(true);
+
+        adapter = new Recycler_Adapter(list, new Recycler_onClickListener() {
+            @Override
+            public void recyclerOnClick(int position) {
+                Note_Entity note = list.get(position);
+                Intent intent = new Intent(MainActivity.this, AddAndUpdateActivity.class);
+                intent.putExtra("note_title", note.getNote());
+                intent.putExtra("note_describtion", note.getDescription());
+                intent.putExtra("button", "update");
+                intent.putExtra("id", note.getId());
+                startActivityForResult(intent,1);
+            }
+
+            @Override
+            public void imageOnClick(final int position) {
+
+                final int itemid=list.get(position).getId();
+
+                final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Delete")
+                        .setMessage("Are you sure to delete this note?")
+                        //default colorAccent
+                        .setPositiveButton("Yes", null)
+                        .setNegativeButton("No", null)
+                        .show();
+                Button positive_btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                positive_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        NoteDataBase.getInstance(MainActivity.this).noteDao().deleteNoteById(list.get(position).getId());
+                        list.remove(list.get(position));
+                        adapter.notifyItemRemoved(position);
+                        adapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                });
+
+                Button negative_btn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negative_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // to exit alertDialog
+                        dialog.dismiss();
+                    }
+                });
+//
+//            }
+            }
+        });
+        main_recycler.setAdapter(adapter);
+
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==1){
             if(resultCode==RESULT_OK){
-                final RecyclerView main_recycler = findViewById(R.id.main_recycler);
-
                 list = NoteDataBase.getInstance(MainActivity.this).noteDao().getAllNotes();
                 RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
                 main_recycler.setLayoutManager(layoutManager);
@@ -88,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("note_describtion", note.getDescription());
                         intent.putExtra("button", "update");
                         intent.putExtra("id", note.getId());
-                        startActivity(intent);
+                        startActivityForResult(intent,1);
                     }
 
                     @Override
@@ -161,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 main_recycler.setAdapter(adapter);
+
 
 
             }
